@@ -1,0 +1,36 @@
+.rr-top-wrap h3{
+	margin-top:1rem; 
+}
+.rr-top-wrap h3, .re-top-wrap h4{
+	font-weight:bold;
+}
+.rr-top-wrap label{
+	margin-left:10px;
+}
+.rr-top-wrap .form-component span{
+	margin-left:4px;
+}
+.def-btn-wrap{
+	text-align:center; margin-top:20px;
+}
+.chHide{
+	display:none;
+}
+.hideChosenRow:visited{
+	color:red;
+}
+.hideChosenRow:hover{
+	font-weight:bolder;
+}
+.hideChosenRow:active{
+	font-weight:normal;
+}
+.prjInfoDiv{
+	border: 1px solid #ddd; padding:10px; margin-right:6px; margin-top:-16px; border-top:none; margin-bottom:15px;
+}
+.prjInfoLabel{
+	font-weight:bold; margin-bottom:4px;
+}
+.prjInfo{
+	color:#2F6384; font-weight:normal;
+}

@@ -1,0 +1,78 @@
+﻿<!--This HTML is used in the render function to build the elements within the plugin. The render function first creates a
+Dijit ContentPane to hold all the elements. The ContentPane is assigned a dynamic id upon creation. The render function
+takes the ContentPane id and prepends it to every element with a declared id in this HTML before the elements are created.
+The unique ContentPane id makes all the element ids unique and prevents duplicate id errors across other apps.-->
+<div id="top-wrap" class="rr-top-wrap">
+	<section>
+		<h4>Symbolize Projects By</h4>
+		<div class="toggle-btn" id="prj-sym-wrap">
+			<input type="radio" id="prj-sym0" name="prj-sym" value="0"/>
+			<label for="prj-sym0">All</label>
+			<input type="radio" id="prj-sym1" name="prj-sym" value="1"/>
+			<label for="prj-sym1">Type</label>
+			<input type="radio" id="prj-sym2" name="prj-sym" value="2"/>
+			<label for="prj-sym2">Objective</label>
+			<input type="radio" id="prj-sym3" name="prj-sym" value="3"/>
+			<label for="prj-sym3">Strategy</label>
+			<input type="radio" id="prj-sym4" name="prj-sym" value="4"/>
+			<label for="prj-sym4">Town</label>
+		</div>
+		<h4>Show Projects Where</h4>
+		<div class="sel-group-wrap"></div>
+		<div id="add-wrap" class="chHide">
+			<button id="add-sel-group-btn" class="button button-default">&#x2b;</button>
+		</div>	
+	</section>
+	<section>
+		<h4 id="cfm">Click a project for more information</h4>
+		<div id="clickRes" class="chHide">
+			<div class="toggle-btn" id="prj-info-wrap">
+				<input type="radio" id="prj-info0" name="prj-info" value="overview"/>
+				<label for="prj-info0">Overview</label>
+				<input type="radio" id="prj-info1" name="prj-info" value="scope"/>
+				<label for="prj-info1">Project Scope</label>
+				<input type="radio" id="prj-info2" name="prj-info" value="character"/>
+				<label for="prj-info2">Site Characteristics</label>
+				<input type="radio" id="prj-info3" name="prj-info" value="supple"/>
+				<label for="prj-info3">Supplementary Info</label>
+			</div>
+			<div class="prjInfoDiv">
+				<div class="prjInfoLabel">Project Name: <span id="pi-Project_Name" class="prjInfo"></span></div>
+				<div class="infoTabWrap overview">
+					<div class="prjInfoLabel">Project Type: <span id="pi-Primary_Cat" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Project Objective: <span id="pi-Secondary_Cat" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Strategy: <span id="pi-Action_" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Town: <span id="pi-Town" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Geo-location: <span id="pi-Point_X" class="prjInfo"></span>, <span id="pi-Point_Y" class="prjInfo"></span></div>
+				</div>
+				<div class="infoTabWrap scope">
+					<div class="prjInfoLabel">Address: <span id="pi-Address" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Description: <span id="pi-Project_Desc" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Funding: <span id="pi-Funding" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Green Infrastructure: <span id="pi-Green_Infra" class="prjInfo"></span></div>
+				</div>
+				<div class="infoTabWrap character">
+					<div class="prjInfoLabel">Primary Asset Exposed: <span id="pi-Risk_Reduction_Prim" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Secondary Asset Exposed: <span id="pi-Risk_Reduction_Sec" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">FEMA Flood Zones (ft.) ref. NAVD88: <span id="pi-FLD_Zone" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Base Flood Elevation (ft.) ref. NAVD88: <span id="pi-BFELEV" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Low to Moderate Income Percentage (within block group): <span id="pi-LMI" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Coastal Jurisdiction Line: (ft.) ref. NAVD88: <span id="pi-CJL_No" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Watershed (HUC-12): <span id="pi-Watershed_HUC12" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">County: <span id="pi-County" class="prjInfo"></span></div>
+				</div>
+				<div class="infoTabWrap supple">
+					<div class="prjInfoLabel">Sources - References:  <span id="pi-Plan_of_Ref_" class="prjInfo"></span></div>
+					<div class="prjInfoLabel">Photos: <span id="pi-" class="prjInfo"></span></div>
+				</div>	
+			</div>	
+		</div>	
+	</section>
+	<section>
+		<div class="def-btn-wrap">
+			<a href="plugins/regional-resilience/assets/Strategy_Definitions.pdf" target="_blank" class="button button-default">Strategy Definitions</a>
+			<a href="plugins/regional-resilience/assets/Project_Type_Definitions.pdf" target="_blank" class="button button-default">Project Type Definitions</a>
+		</div>
+	</section>
+</div>	
+
