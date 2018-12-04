@@ -134,6 +134,7 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 				});	
 			},
 			graphicClick: function(t,a){
+				console.log('graphic click');
 				$("#" + t.id + "cfm").html("Selected Project Attributes");
 				$("#" + t.id + "clickRes").slideDown();
 				var oid = a.OBJECTID
@@ -156,19 +157,36 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 						$("#" + v.id).html(a[sid]);
 					}	
 				});
-				if (t.images[a.Project_Key]){
-					$("#" + t.id + "prPhotos").html("");
-					$.each(t.images[a.Project_Key],function(i,v){
-						var n = i+1;
-						if (n == 1){
-							$("#" + t.id + "prPhotos").append("<a href='https://ow-maps.s3.amazonaws.com/cn_filterSelect/" + v + "' target='_blank'>Photo " + n + "</a>");
-						}else{
-							$("#" + t.id + "prPhotos").append(", <a href='https://ow-maps.s3.amazonaws.com/cn_filterSelect/" + v + "' target='_blank'>Photo " + n + "</a>");
-						}
-					})
-				}else{
-					$("#" + t.id + "prPhotos").html("None");
-				}
+				// handle images on graphic click
+		        var url = 'http://services.coastalresilience.org:6080/arcgis/rest/services/Connecticut/Regional_Resilience_Projects_v2/MapServer/0/' +a.OBJECTID +'/attachments?f=pjson'
+		        $.get(url, function(data) {
+		            var defer = $.Deferred(),
+		            filtered = defer.then(function(){
+		                return data;
+		            })
+		            defer.resolve();
+		            filtered.done(function(data){
+		              $("#" + t.id + "prPhotos").html(""); // reset html back to empty
+		              var obj = JSON.parse(data);
+		              if(obj.attachmentInfos.length > 0){
+		              	var n = 1;
+		              	// loop through the attachments JSON and build image link the append link to DIV.
+		              	$.each(obj.attachmentInfos, function(i,v){
+			              	var id = obj.attachmentInfos[i].id;
+			              	var imageUrl = url.split('?')[0] + '/' + id;
+			              	if(n==1){
+			              		$("#" + t.id + "prPhotos").append("<a href='"+ imageUrl +"' target='_blank'> Photo "  +  n  + "</a>");
+			              	}else{
+			              		$("#" + t.id + "prPhotos").append(", <a href='"+ imageUrl +"' target='_blank'> Photo "  +  n  + "</a>");
+			              	}
+			              	n++;
+			            })
+		              }else{
+		              		$("#" + t.id + "prPhotos").html("None");
+		              }
+		            })
+		          })
+
 			},
 			setDisabled: function(t,b){
 				var ar = ["slrCh", "popCh"];
@@ -181,150 +199,6 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 			makeVariables: function(t){
 				t.atts = [];
 				t.chCnt = 0;
-				t.images = {
-					"1003": ["1003a.JPG", "1003b.JPG", "1003c.JPG", "1003d.JPG"],
-					"1004": ["1004a.JPG", "1004b.JPG"],
-					"1007": ["1007a.JPG"],
-					"1009": ["1009.JPG", "1009b.JPG"],
-					"101": ["101a.JPG", "101b.JPG"],
-					"102": ["102a.jpg"],
-					"103": ["103a.JPG"],
-					"104": ["104a.jpg", "104b.JPG", "104c.JPG"],
-					"105": ["105a.JPG"],
-					"106": ["106a.JPG", "106b.JPG"],
-					"107": ["107a.JPG"],
-					"108": ["108.JPG"],
-					"109": ["109a.JPG"],
-					"110": ["110a.JPG", "110b.JPG"],
-					"111": ["111a.JPG"],
-					"112": ["112.png"],
-					"114": ["114a.JPG"],
-					"115": ["115a.JPG", "115b.JPG"],
-					"116": ["116a.JPG", "116b.JPG", "116c.JPG"],
-					"117": ["117a.jpg", "117b.jpg"],
-					"118": ["118a.JPG", "118b.JPG"],
-					"132": ["132a.JPG", "132b.JPG", "132c.JPG"],
-					"144": ["144.JPG", "144a.JPG", "144b.JPG", "144c.JPG", "144d.JPG", "144e.JPG", "144f.JPG"],
-					"201": ["201a.jpg"],
-					"202": ["202a.jpg", "202b.JPG"],
-					"208": ["208a.JPG", "208b.JPG"],
-					"211": ["211a.JPG"],
-					"216": ["216a.JPG"],
-					"217": ["217a.JPG"],
-					"218": ["218a.JPG", "218b.JPG"],
-					"221": ["221a.jpg"],
-					"222": ["222a.jpg"],
-					"223": ["223a.JPG"],
-					"224": ["224a.JPG", "224b.JPG"],
-					"225": ["225a.JPG"],
-					"228": ["228a.JPG", "228b.JPG", "228c.JPG", "228d.JPG", "228e.JPG"],
-					"232": ["232a.JPG", "232b.JPG"],
-					"301": ["301a.JPG", "301b.JPG", "301c.jpg"],
-					"304": ["304a.JPG"],
-					"307": ["307a.JPG"],
-					"308": ["308a.JPG"],
-					"309": ["309a.JPG"],
-					"310": ["310a.JPG", "310b.JPG"],
-					"311": ["311a.JPG"],
-					"313": ["313a.JPG", "313b.JPG", "313c.JPG"],
-					"315": ["315a.jpg", "315b.JPG"],
-					"316": ["316a.JPG"],
-					"322": ["322.JPG", "322a.JPG", "322b.JPG", "322c.JPG"],
-					"324": ["324.JPG", "324a.JPG", "324b.JPG", "324c.JPG"],
-					"326": ["326.JPG", "326a.JPG", "326b.JPG", "326c.JPG", "326d.JPG", "326e.JPG"],
-					"327": ["327.JPG", "327a.JPG", "327b.JPG", "327c.JPG", "327d.JPG", "327e.JPG", "327f.JPG", "327g.JPG", "327h.JPG"],
-					"401": ["401a.JPG"],
-					"402": ["402a.JPG"],
-					"403": ["403a.jpg", "403b.jpg"],
-					"404": ["404a.JPG"],
-					"405": ["405a.jpg", "405b.JPG"],
-					"407": ["407a.JPG", "407b.JPG"],
-					"409": ["409a.JPG"],
-					"410": ["410a.JPG"],
-					"411": ["411a.JPG"],
-					"413": ["413a.JPG"],
-					"414": ["414a.JPG", "414b.JPG"],
-					"416": ["416a.JPG"],
-					"418": ["418a.JPG", "418b.JPG"],
-					"419": ["419a.JPG"],
-					"422": ["422a.JPG", "422b.JPG"],
-					"423": ["423a.JPG"],
-					"424": ["424a.JPG", "424b.JPG"],
-					"430": ["430a.JPG"],
-					"438": ["438.JPG"],
-					"501": ["501a.JPG"],
-					"503": ["503a.JPG"],
-					"507": ["507a.JPG"],
-					"508": ["508a.JPG"],
-					"510": ["510a.JPG", "510b.JPG"],
-					"511": ["511a.JPG", "511b.JPG"],
-					"512": ["512a.JPG"],
-					"514": ["514a.JPG"],
-					"515": ["515a.JPG"],
-					"516": ["516a.JPG"],
-					"517": ["517a.JPG"],
-					"518": ["518a.JPG"],
-					"519": ["519a.JPG", "519b.JPG"],
-					"520": ["520a.JPG", "520b.JPG", "520c.JPG"],
-					"521": ["521a.JPG"],
-					"522": ["522.JPG", "522a.JPG", "522b.JPG", "522c.JPG", "522d.JPG", "522e.JPG", "522f.JPG", "522g.JPG"],
-					"604": ["604a.JPG", "604b.JPG", "604c.JPG", "604d.JPG"],
-					"605": ["605a.JPG", "605b.JPG", "605c.JPG", "605d.JPG", "605e.JPG"],
-					"606": ["606a.JPG", "606b.JPG"],
-					"607": ["607a.JPG"],
-					"609": ["609a.JPG"],
-					"610": ["610a.JPG"],
-					"615": ["615.PNG"],
-					"620": ["620.jpg", "620a.JPG"],
-					"621": ["621.PNG"],
-					"622": ["622.jpg"],
-					"629": ["629.JPG", "629a.JPG", "629b.JPG", "629c.JPG", "629d.JPG", "629e.JPG", "629f.JPG"],
-					"630": ["630.JPG", "630a.JPG", "630b.JPG", "630c.JPG"],
-					"631": ["631.PNG", "631a.PNG"],
-					"637": ["637.JPG", "637a.JPG", "637b.JPG", "637c.JPG", "637d.JPG", "637e.JPG"],
-					"703": ["703a.JPG", "703b.JPG"],
-					"704": ["704a.JPG"],
-					"705": ["705a.jpg", "705b.JPG"],
-					"710": ["710a.JPG"],
-					"711": ["711a.JPG"],
-					"712": ["712a.jpg", "712b.JPG"],
-					"713": ["713a.JPG"],
-					"715": ["715.JPG", "715a.JPG"],
-					"716": ["716.JPG", "716a.JPG"],
-					"717": ["717.JPG", "717a.JPG"],
-					"718": ["718.JPG", "718a.JPG"],
-					"719": ["719.JPG", "719a.JPG", "719c.JPG", "719d.JPG"],
-					"720": ["720.JPG", "720a.JPG", "720b.JPG"],
-					"721": ["721.JPG", "721a.JPG", "721b.JPG"],
-					"722": ["722.JPG", "722a.JPG", "722b.JPG"],
-					"801": ["801a.JPG"],
-					"802": ["802a.JPG"],
-					"803": ["803a.JPG"],
-					"804": ["804a.jpg", "804b.JPG", "804c.JPG"],
-					"805": ["805a.JPG", "805b.JPG", "805c.png"],
-					"807": ["807a.JPG"],
-					"808": ["808a.JPG"],
-					"809": ["809a.jpg"],
-					"810": ["810a.JPG", "810b.jpg", "810c.jpg", "810d.JPG", "810e.JPG"],
-					"811": ["811a.JPG", "811b.JPG", "811c.JPG", "811d.JPG"],
-					"812": ["812a.jpg", "812b.jpg", "812c.jpg"],
-					"814": ["814a.JPG"],
-					"815": ["815a.JPG"],
-					"816": ["816a.jpg"],
-					"820": ["820a.JPG"],
-					"828": ["828.JPG", "828a.jpg"],
-					"901": ["901.PNG", "901a.JPG", "901b.JPG", "901c.JPG", "901d.JPG", "901e.JPG", "901f.JPG"],
-					"902": ["902a.jpg"],
-					"903": ["903a.JPG"],
-					"904": ["904a.jpg"],
-					"905": ["905a.jpg"],
-					"907": ["907a.jpg"],
-					"908": ["908a.jpg"],
-					"909": ["909a.jpg", "909b.JPG"],
-					"912": ["912a.jpg"],
-					"913": ["913a.jpg", "913b.jpg"],
-					"914": ["914a.jpg"]
-				}
 			}
         });
     }
