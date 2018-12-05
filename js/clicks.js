@@ -129,12 +129,10 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 				});
 				t.map.graphics.on("click",function(c){
 					var a = c.graphic.attributes;
-					console.log(a);
 					t.clicks.graphicClick(t,a);
 				});	
 			},
 			graphicClick: function(t,a){
-				console.log('graphic click');
 				$("#" + t.id + "cfm").html("Selected Project Attributes");
 				$("#" + t.id + "clickRes").slideDown();
 				var oid = a.OBJECTID
@@ -152,6 +150,8 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 					if (sid == "Plan_of_Ref_"){
 						if (a[sid]){
 							$("#" + v.id).html("<a href='" + a[sid] + "' target='_blank'>Link to info</a>");
+						}else{
+							$("#" + v.id).html('None')
 						}
 					}else{
 						$("#" + v.id).html(a[sid]);
