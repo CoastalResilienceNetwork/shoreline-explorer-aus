@@ -158,7 +158,7 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 					}	
 				});
 				// handle images on graphic click
-		        var url = 'http://services.coastalresilience.org:6080/arcgis/rest/services/Connecticut/Regional_Resilience_Projects_v2/MapServer/0/' +a.OBJECTID +'/attachments?f=pjson'
+		        var url = 'https://services2.coastalresilience.org/arcgis/rest/services/Connecticut/Regional_Resilience_Projects/MapServer/0/' +a.OBJECTID +'/attachments?f=pjson'
 		        $.get(url, function(data) {
 		            var defer = $.Deferred(),
 		            filtered = defer.then(function(){
