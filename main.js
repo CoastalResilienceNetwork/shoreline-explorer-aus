@@ -93,6 +93,8 @@ function ( 	declare, PluginBase, ContentPane, dom, domStyle, domGeom, obj, conte
 			// Create ESRI objects and event listeners	
 			this.esriapi.esriApiFunctions(this);
 			this.rendered = true;	
+			
+			
 		}
 	});
 });

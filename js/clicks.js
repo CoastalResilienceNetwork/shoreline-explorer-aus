@@ -36,15 +36,16 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 					$(".sel-group-wrap").append(andOr)
 				}
 				$("#" + t.id + "add-wrap").hide();
-				if (cnt == 0){
-					$(".sel-group-wrap").append(t.selGroup1);
-				}else{
-					$(".sel-group-wrap").append(t.selGroups);
-				}
+				// if (cnt == 0){
+				// 	$(".sel-group-wrap").append(t.selGroup1);
+				// }else{
+				$(".sel-group-wrap").append(t.selGroups);
+				// }
 				// create chosen elements and add event listeners
-				$(".query-field").chosen({allow_single_deselect:true, width:"120px","disable_search": true})
+				$(".query-field").chosen({allow_single_deselect:false, width:"120px","disable_search": true})
 					.change(function(c){
 						var lbl = c.currentTarget.selectedOptions[0].innerHTML;
+						
 						t.queryField = c.currentTarget.value;
 					 	var nextCho = $(c.currentTarget).parent().parent().find(".query-val");
 					 	$(nextCho).empty();
@@ -61,11 +62,12 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 						}
 						$(nextCho).trigger("chosen:updated");
 						$("#" + t.id + "add-wrap").hide();
+						
 					});	
 				$(".query-val").chosen({width:"230px"})
 					.change(function(c){
 						t.clicks.updateLayerDefs(t);
-					var cnt = $(".sel-group-wrap").children().length;
+						var cnt = $(".sel-group-wrap").children().length;
 						if (cnt > 5){
 							$("#" + t.id + "add-wrap").hide();
 						}else{
@@ -73,8 +75,14 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 						}
 					});	
 				$(".hideChosenRow").click(function(c){
-					$(c.currentTarget).parent().parent().prev().remove();
-					$(c.currentTarget).parent().parent().remove();
+					var cnt = $(".sel-group-wrap").children().length;
+					if (cnt > 1) {
+						$(c.currentTarget).parent().parent().prev().remove();
+						$(c.currentTarget).parent().parent().remove();
+					}else{
+						$(c.currentTarget).parent().parent().find('.query-field').val('').trigger('chosen:updated').trigger('change')
+											
+					}
 					t.clicks.updateLayerDefs(t);
 				})	
 				$(".andOrRadio").change(function(){
@@ -82,7 +90,8 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 				})
 			},
 			updateLayerDefs: function(t){
-				var q = "";
+				var cnt = $(".sel-group-wrap").children().length;
+				var q = "OBJECTID > -1";
 				$(".sel-group-wrap").find(".query-field").each(function(i,v){
 					var val1 = v.value;
 					var val2 = $(v).parent().parent().find(".query-val")[0].value;
@@ -95,6 +104,15 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 						}		
 					}	
 				})
+
+				if (cnt == 1) {
+					if ($($(".sel-group-wrap").children().find('.chosen-wrap')[1]).is(':hidden')){
+						q = "OBJECTID > -1";
+						// $('.hideChosenRow').hide()
+					}
+
+				}
+
 				t.layerDefs = [];
 				t.layerDefs[0] = q;
 				t.layerDefs[1] = q;

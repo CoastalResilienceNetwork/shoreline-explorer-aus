@@ -15,7 +15,10 @@ function ( 	ArcGISDynamicMapServiceLayer, Extent, SpatialReference, Query, Query
 				t.map.addLayer(t.dynamicLayer);
 				t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
 			
-				t.dynamicLayer.on("load", function () { 			
+				t.dynamicLayer.on("load", function () { 	
+					// // change extent on initial load of map
+					// var extent = new Extent(-8273294.722903033, 4990174.97961198, -7906702.735247505, 5179433.061645985, new SpatialReference({ wkid:4326 }))
+					// t.map.setExtent(extent);
 					t.layersArray = t.dynamicLayer.layerInfos;
 					// Save and Share Handler					
 					if (t.obj.stateSet == "yes"){
