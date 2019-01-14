@@ -36,11 +36,7 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 					$(".sel-group-wrap").append(andOr)
 				}
 				$("#" + t.id + "add-wrap").hide();
-				// if (cnt == 0){
-				// 	$(".sel-group-wrap").append(t.selGroup1);
-				// }else{
 				$(".sel-group-wrap").append(t.selGroups);
-				// }
 				// create chosen elements and add event listeners
 				$(".query-field").chosen({allow_single_deselect:false, width:"120px","disable_search": true})
 					.change(function(c){
@@ -59,6 +55,7 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 							t.layerDefs = [];
 							t.dynamicLayer.setLayerDefinitions(t.layerDefs);
 							$(c.currentTarget).parent().parent().find(".chHide").hide();
+							// $('.hideChosenRow').hide()
 						}
 						$(nextCho).trigger("chosen:updated");
 						$("#" + t.id + "add-wrap").hide();
@@ -108,11 +105,8 @@ function ( declare, Query, QueryTask, graphicsUtils ) {
 				if (cnt == 1) {
 					if ($($(".sel-group-wrap").children().find('.chosen-wrap')[1]).is(':hidden')){
 						q = "OBJECTID > -1";
-						// $('.hideChosenRow').hide()
 					}
-
 				}
-
 				t.layerDefs = [];
 				t.layerDefs[0] = q;
 				t.layerDefs[1] = q;

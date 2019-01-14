@@ -22,7 +22,7 @@ function ( 	ArcGISDynamicMapServiceLayer, Extent, SpatialReference, Query, Query
 					t.layersArray = t.dynamicLayer.layerInfos;
 					// Save and Share Handler					
 					if (t.obj.stateSet == "yes"){
-						//extent
+						//extent 
 						var extent = new Extent(t.obj.extent.xmin, t.obj.extent.ymin, t.obj.extent.xmax, t.obj.extent.ymax, new SpatialReference({ wkid:4326 }))
 						t.map.setExtent(extent, true);
 						t.obj.stateSet = "no";
