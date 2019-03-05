@@ -1,216 +1,173 @@
 define([
-	"dojo/_base/declare", "esri/tasks/query", "esri/tasks/QueryTask", "esri/graphicsUtils"
+	"dojo/_base/declare", "esri/tasks/query", "esri/tasks/QueryTask", "esri/layers/FeatureLayer", "esri/dijit/Search", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol","esri/symbols/SimpleMarkerSymbol", "esri/graphic", "dojo/_base/Color"
 ],
-function ( declare, Query, QueryTask, graphicsUtils ) {
+function ( declare, Query, QueryTask,FeatureLayer, Search, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, Graphic, Color) {
         "use strict";
 
         return declare(null, {
 			eventListeners: function(t){
-				$("#" + t.id + "prj-sym-wrap input").click(function(c){
-					t.obj.lyrNum = c.currentTarget.value;
-					t.obj.visibleLayers = [t.obj.lyrNum];
-					t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
-				});
-				$("#" + t.id + "add-sel-group-btn").click(function(){
-					t.clicks.addChosenGroup(t);	
-				})
-				$("#" + t.id + "prj-info-wrap input").click(function(c){
-					$(".infoTabWrap").hide();
-					$("." + c.currentTarget.value).show();
-				})
-			},
-			addChosenGroup: function(t){
-				t.chCnt = t.chCnt + 1
-				var cnt = $(".sel-group-wrap").children().length;
-				if (cnt > 0){
-					var andOr = '<div class="andOrRadio"><label class="form-component" for="optionA' + t.chCnt + '">' + 
-									'<input checked type="radio" id="optionA' + t.chCnt + '" value="AND" name="andOr' + t.chCnt + '">' +
-									'<div class="check"></div>' + 
-									'<span class="form-text">And</span>' +
-								'</label>' +
-								'<label class="form-component" for="optionB' + t.chCnt + '">' + 
-									'<input type="radio" id="optionB' + t.chCnt + '" value="OR" name="andOr' + t.chCnt + '">' +
-									'<div class="check"></div>' + 
-									'<span class="form-text">Or</span>' +
-								'</label></div>'
-					$(".sel-group-wrap").append(andOr)
-				}
-				$("#" + t.id + "add-wrap").hide();
-				$(".sel-group-wrap").append(t.selGroups);
-				// create chosen elements and add event listeners
-				$(".query-field").chosen({allow_single_deselect:false, width:"120px","disable_search": true})
-					.change(function(c){
-						var lbl = c.currentTarget.selectedOptions[0].innerHTML;
-						
-						t.queryField = c.currentTarget.value;
-					 	var nextCho = $(c.currentTarget).parent().parent().find(".query-val");
-					 	$(nextCho).empty();
-						$(nextCho).append("<option></option>")
-					 	if (t.queryField.length > 0){
-							$.each(t[t.queryField],function(i,v){
-								$(nextCho).append("<option value='" + v + "'>"+ v +"</option")
+// work with Radio buttons (how would you like to view shoreline data) ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				$('#' + t.id + 'aus-viewRadioWrap input').on('click',function(c){
+					var val = c.target.value
+					if (val == 'all'){
+						t.techLyr = 1
+						t.obj.visibleLayers = [t.techLyr]
+						t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
+						$('#' + t.id + 'aus-enhanceFuncWrap').slideUp()
+						$('#' + t.id + 'sup1').prop('checked', true);
+					}
+					if (val == 'ind'){
+						$('#' + t.id + 'sup1').prop('checked', true);
+						if(t.obj.indInit == 'yes'){
+							t.techLyr = 2;
+							t.obj.visibleLayers = [t.techLyr]
+							t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
+							t.obj.indInit = 'no'
+						}else{
+							$.each($( '#' + t.id +'funcWrapper input'),function(i,v){
+								if(v.checked == true){
+									var val = v.value;
+									$.each($(t.layersArray),function(i,v){
+										var lyrName = v.name;
+										if(val == lyrName){
+											t.techLyr = v.id
+										}
+									});
+								}
 							});
-							$(c.currentTarget).parent().parent().find(".chHide").show();
-						}else{
-							t.layerDefs = [];
-							t.dynamicLayer.setLayerDefinitions(t.layerDefs);
-							$(c.currentTarget).parent().parent().find(".chHide").hide();
-							// $('.hideChosenRow').hide()
+							t.obj.visibleLayers = [t.techLyr]
+							t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
 						}
-						$(nextCho).trigger("chosen:updated");
-						$("#" + t.id + "add-wrap").hide();
-						
-					});	
-				$(".query-val").chosen({width:"230px"})
-					.change(function(c){
-						t.clicks.updateLayerDefs(t);
-						var cnt = $(".sel-group-wrap").children().length;
-						if (cnt > 5){
-							$("#" + t.id + "add-wrap").hide();
-						}else{
-							$("#" + t.id + "add-wrap").show();
-						}
-					});	
-				$(".hideChosenRow").click(function(c){
-					var cnt = $(".sel-group-wrap").children().length;
-					if (cnt > 1) {
-						$(c.currentTarget).parent().parent().prev().remove();
-						$(c.currentTarget).parent().parent().remove();
-					}else{
-						$(c.currentTarget).parent().parent().find('.query-field').val('').trigger('chosen:updated').trigger('change')
-											
+						$('#' + t.id + 'aus-enhanceFuncWrap').slideDown()
 					}
-					t.clicks.updateLayerDefs(t);
-				})	
-				$(".andOrRadio").change(function(){
-					t.clicks.updateLayerDefs(t);
 				})
-			},
-			updateLayerDefs: function(t){
-				var cnt = $(".sel-group-wrap").children().length;
-				var q = "OBJECTID > -1";
-				$(".sel-group-wrap").find(".query-field").each(function(i,v){
-					var val1 = v.value;
-					var val2 = $(v).parent().parent().find(".query-val")[0].value;
-					if (i == 0){
-						q = val1 + " = '" + val2 + "'";
-					}else{
-						if (val2){
-							var andOr = $(v).parent().parent().prev().find("input:checked")[0].value;
-							q = q + " " + andOr	+ " " + val1 + " = '" + val2 + "'";						
-						}		
-					}	
+// work with Radio buttons indiv. techniques ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				$('#' + t.id + 'funcWrapper input').on('click',function(c){
+					var val = c.target.value
+					$.each($(t.layersArray),function(i,v){
+						var lyrName = v.name;
+						if(val == lyrName){
+							t.techLyr = v.id
+							t.obj.visibleLayers = [v.id];
+					 		t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
+						}
+					});
 				})
-
-				if (cnt == 1) {
-					if ($($(".sel-group-wrap").children().find('.chosen-wrap')[1]).is(':hidden')){
-						q = "OBJECTID > -1";
-					}
-				}
-				t.layerDefs = [];
-				t.layerDefs[0] = q;
-				t.layerDefs[1] = q;
-				t.layerDefs[2] = q;
-				t.layerDefs[3] = q;
-				t.layerDefs[4] = q;
-				t.dynamicLayer.setLayerDefinitions(t.layerDefs);
-				t.clicks.graphicQuery(t,q);
-			},
-			graphicQuery: function(t,q){
-				$("#" + t.id + "cfm").html("Click a project for more information");
-				$("#" + t.id + "clickRes").slideUp();
-				t.map.graphics.clear()
-				var mq = new Query();
-				var qt = new QueryTask(t.url + "/0" );
-				mq.where = q;
-				mq.returnGeometry = true;
-				mq.outFields = ["*"];
-				qt.execute(mq, function(e){
-					$.each(e.features, function(i,v){
-						var graphic = v;
-						graphic.setAttributes(v.attributes);
-						graphic.setSymbol(t.symbol);
-						t.map.graphics.add(graphic);
-					})			
-				});
-				t.map.graphics.on("mouse-over",function(){
-					t.map.setMapCursor("pointer");
-				});	
-				t.map.graphics.on("mouse-out",function(){
-					t.map.setMapCursor("default");
-				});
-				t.map.graphics.on("click",function(c){
-					var a = c.graphic.attributes;
-					t.clicks.graphicClick(t,a);
-				});	
-			},
-			graphicClick: function(t,a){
-				$("#" + t.id + "cfm").html("Selected Project Attributes");
-				$("#" + t.id + "clickRes").slideDown();
-				var oid = a.OBJECTID
-				$.each(t.map.graphics.graphics,function(i,v){
-					if (v.attributes){
-						if (v.attributes.OBJECTID == oid){
-							v.setSymbol(t.symbolS);
-						}else{
-							v.setSymbol(t.symbol);
+// work with Radio buttons sup data section ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				$('.aus-supDataWrap input').on('click',function(c){
+					var val = c.target.value
+					$.each($(t.layersArray),function(i,v){
+						var lyrName = v.name;
+						if(val == lyrName){
+							t.techLyr = v.id
+							t.obj.visibleLayers = [v.id];
+					 		t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
 						}
-					}
-				});
-				$(".prjInfo").each(function(i,v){
-					var sid = v.id.split("-").pop(); 
-					if (sid == "Plan_of_Ref_"){
-						if (a[sid]){
-							$("#" + v.id).html("<a href='" + a[sid] + "' target='_blank'>Link to info</a>");
-						}else{
-							$("#" + v.id).html('None')
+						if(val == 'None'){
+							$.each($( '#' + t.id +'aus-viewRadioWrap input'),function(i,v){
+								if (v.checked == true){
+									if(v.value == 'all'){
+										$( '#' + v.id).trigger('click');
+									}else{
+										$.each($( '#' + t.id +'aus-enhanceFuncWrap input'),function(i,v){
+											if(v.checked == true){
+												$( '#' + v.id).trigger('click');
+											}
+										});
+									}
+								}
+							});
 						}
-					}else{
-						$("#" + v.id).html(a[sid]);
-					}	
-				});
-				// handle images on graphic click
-		        var url = 'https://services2.coastalresilience.org/arcgis/rest/services/Connecticut/Regional_Resilience_Projects/MapServer/0/' +a.OBJECTID +'/attachments?f=pjson'
-		        $.get(url, function(data) {
-		            var defer = $.Deferred(),
-		            filtered = defer.then(function(){
-		                return data;
-		            })
-		            defer.resolve();
-		            filtered.done(function(data){
-		              $("#" + t.id + "prPhotos").html(""); // reset html back to empty
-		              var obj = JSON.parse(data);
-		              if(obj.attachmentInfos.length > 0){
-		              	var n = 1;
-		              	// loop through the attachments JSON and build image link the append link to DIV.
-		              	$.each(obj.attachmentInfos, function(i,v){
-			              	var id = obj.attachmentInfos[i].id;
-			              	var imageUrl = url.split('?')[0] + '/' + id;
-			              	if(n==1){
-			              		$("#" + t.id + "prPhotos").append("<a href='"+ imageUrl +"' target='_blank'> Photo "  +  n  + "</a>");
-			              	}else{
-			              		$("#" + t.id + "prPhotos").append(", <a href='"+ imageUrl +"' target='_blank'> Photo "  +  n  + "</a>");
-			              	}
-			              	n++;
-			            })
-		              }else{
-		              		$("#" + t.id + "prPhotos").html("None");
-		              }
-		            })
-		          })
-
-			},
-			setDisabled: function(t,b){
-				var ar = ["slrCh", "popCh"];
-				$.each(ar,function(i,v){
-					$("#" + t.id + "top-wrap input[name='" + v + "']").each(function(i1,v1){
-						$(v1).prop("disabled",b);
 					});
 				});
+// feature layer init ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				t.attributeData = new FeatureLayer(t.url + "/6", { mode: FeatureLayer.MODE_SELECTION, outFields: ["*"] });
+				// Map click ////////////////////////////////////////
+				t.map.on("click", function(evt) {
+					if(t.open == 'yes'){
+						t.obj.pnt = evt.mapPoint;
+						var q = new Query();
+						q.geometry = t.obj.pnt;
+						t.attributeData.selectFeatures(q,esri.layers.FeatureLayer.SELECTION_NEW);
+					}
+				});
+// // On selection complete ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				t.attributeData.on('selection-complete', function(evt){
+					if(evt.features.length > 0){
+						t.layerDefs = []
+						var OID = evt.features[0].attributes.OBJECTID;
+						var beach = evt.features[0].attributes.beach
+						var exposure = evt.features[0].attributes.exposure
+						var mm = evt.features[0].attributes.mm
+						var slope = evt.features[0].attributes.slope
+						// Handle converting attributes to html text
+						if(beach == 1){
+							beach = 'Present'
+						}else{
+							beach = 'Not Present'
+						}
+						if(mm == 1){
+							mm = 'Present'
+						}else{
+							mm = 'Not Present'
+						}
+						if(exposure == 10){
+							exposure = 'Low'
+						}else if(exposure == 7){
+							exposure = 'Medium'
+						}else{
+							exposure = 'High'
+						}
+
+						if(slope == 10){
+							slope = 'Flat'
+						}else if(slope == 7){
+							slope = 'Moderate'
+						}else{
+							slope = 'Steep'
+						}
+						$('#' + t.id + 'aus-attWrap').slideDown()
+						$('#' + t.id + 'clickInst').slideUp()
+						t.layerDefs[0] = 'OBJECTID = ' + OID;
+						t.dynamicLayer.setLayerDefinitions(t.layerDefs);
+						t.obj.visibleLayers = [0,t.techLyr];
+						$('#' + t.id + 'attExp').html(exposure);
+						$('#' + t.id + 'attSlope').html(slope);
+						$('#' + t.id + 'attBP').html(beach);
+						$('#' + t.id + 'attMM').html(mm);
+						
+					}else{
+						$('#' + t.id + 'clickInst').slideDown()
+						$('#' + t.id + 'aus-attWrap').slideUp()
+						t.obj.visibleLayers = [t.techLyr];
+					}
+					t.dynamicLayer.setVisibleLayers(t.obj.visibleLayers);
+				});
+				// use this area to colapse attributes and check sup data to none.
+				$('#' + t.id + 'aus-viewRadioWrap input ,#' + t.id + 'funcWrapper input, #' + t.id + 'aus-supDataWrap').on('click',function(c){
+					//$('#' + t.id + 'sup1').trigger('click');
+					$('#' + t.id + 'aus-attWrap').slideUp();
+					$('#' + t.id + 'clickInst').slideDown();
+				});
 			},
-			makeVariables: function(t){
-				t.atts = [];
-				t.chCnt = 0;
+			
+			commaSeparateNumber: function(val){
+				while (/(\d+)(\d{3})/.test(val.toString())){
+					val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+				}
+				return val;
+			},
+			abbreviateNumber: function(num) {
+			    if (num >= 1000000000) {
+			        return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+			     }
+			     if (num >= 1000000) {
+			        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+			     }
+			     if (num >= 1000) {
+			        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+			     }
+			     return num;
 			}
         });
     }
