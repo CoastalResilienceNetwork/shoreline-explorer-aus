@@ -6,7 +6,7 @@ define([
 function ( 	declare, PluginBase, ContentPane, dom, domStyle, domGeom, obj, content, esriapi, clicks, lang ) {
 	return declare(PluginBase, {
 		// The height and width are set here when an infographic is defined. When the user click Continue it rebuilds the app window with whatever you put in.
-		toolbarName: "Restoration Explorer - Beta", showServiceLayersInLegend: true, allowIdentifyWhenActive: false, rendered: false, resizable: false,
+		toolbarName: "Shoreline Explorer", showServiceLayersInLegend: true, allowIdentifyWhenActive: false, rendered: false, resizable: false,
 		hasCustomPrint: false, size:'custom', width:420, hasHelp:false, 
 		
 		// First function called when the user clicks the pluging icon. 
@@ -28,10 +28,12 @@ function ( 	declare, PluginBase, ContentPane, dom, domStyle, domGeom, obj, conte
 		// Called after hibernate at app startup. Calls the render function which builds the plugins elements and functions.   
 		activate: function (showHelpOnStart) {
 			if (this.rendered == false) {
+				ga('send', 'event', this.toolbarName, 'Opened app');
 				this.rendered = true;							
 				this.render();
 				$(this.printButton).hide();
 			}else{
+				ga('send', 'event', this.toolbarName, 'Re-opened app');
 				this.dynamicLayer.setVisibleLayers(this.obj.visibleLayers);
 				$('#' + this.id).parent().parent().css('display', 'flex');
 				// this.clicks.updateAccord(this);
